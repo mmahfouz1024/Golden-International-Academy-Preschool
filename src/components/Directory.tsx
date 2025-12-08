@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, Users, GraduationCap, Baby, Phone, Mail, MapPin, School } from 'lucide-react';
+import { Search, Users, GraduationCap, Baby, Phone, Mail, School } from 'lucide-react';
 import { getUsers, getStudents } from '../services/storageService';
 import { User, Student } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';

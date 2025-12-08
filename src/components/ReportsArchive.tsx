@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, Calendar, User, FileText, ChevronLeft, ChevronRight, Filter, X } from 'lucide-react';
+import { Search, Calendar, User, FileText, Filter, X } from 'lucide-react';
 import { getReports, getStudents } from '../services/storageService';
 import { Student, DailyReport } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';

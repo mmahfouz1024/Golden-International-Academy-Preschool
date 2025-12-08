@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, Shield, X, Save, User as UserIcon } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Shield, X, Save } from 'lucide-react';
 import { getUsers, saveUsers, getStudents } from '../services/storageService';
 import { User, UserRole, Student } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -62,8 +62,12 @@ const UserManagement: React.FC = () => {
       const newUser: User = {
         id: `u-${Date.now()}`,
         avatar: `https://picsum.photos/seed/${Date.now()}/100/100`,
-        ...formData as User
-      };
+        name: formData.name!,
+        username: formData.username!,
+        password: formData.password!,
+        role: formData.role || 'teacher',
+        linkedStudentId: formData.linkedStudentId,
+      } as User;
       updatedUsers = [...users, newUser];
     }
     

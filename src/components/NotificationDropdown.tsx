@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, Info, AlertTriangle, CheckCircle, Bell, X } from 'lucide-react';
+import { Info, AlertTriangle, CheckCircle, Bell, X } from 'lucide-react';
 import { useNotification } from '../contexts/NotificationContext';
 import { useLanguage } from '../contexts/LanguageContext';
 

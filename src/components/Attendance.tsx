@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Calendar, Check, X, Clock, UserCheck, Filter, PieChart, Save } from 'lucide-react';
+import { Check, X, Clock, UserCheck, Filter, PieChart, Save } from 'lucide-react';
 import { MOCK_STUDENTS } from '../constants';
 import { AttendanceStatus } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';

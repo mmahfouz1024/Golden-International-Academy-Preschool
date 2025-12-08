@@ -60,7 +60,10 @@ const ClassManagement: React.FC = () => {
     } else {
       const newClass: ClassGroup = {
         id: `c-${Date.now()}`,
-        ...formData as ClassGroup
+        name: formData.name!,
+        ageRange: formData.ageRange || '',
+        teacherId: formData.teacherId,
+        capacity: formData.capacity || 20
       };
       updatedClasses = [...classes, newClass];
     }

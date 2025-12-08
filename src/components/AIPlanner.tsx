@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Sparkles, BookOpen, Send, Loader2, MessageSquare, Pencil, Save, Check, FileText, Library, Search, Clock, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Sparkles, BookOpen, Send, Loader2, MessageSquare, Pencil, Save, Check, FileText, Library, Search, Clock, ArrowRight } from 'lucide-react';
 import { generateActivityPlan, draftParentMessage } from '../services/geminiService';
 import { ActivityPlan } from '../types';
 import { AGE_GROUPS } from '../constants';

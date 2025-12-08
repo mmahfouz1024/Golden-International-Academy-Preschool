@@ -13,7 +13,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { t, language, toggleLanguage } = useLanguage();
+  const { t, language, toggleLanguage, dir } = useLanguage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 flex items-center justify-center p-4 relative ${language === 'rtl' ? 'text-right' : 'text-left'}`} dir={language === 'ar' ? 'rtl' : 'ltr'}>
+    <div className={`min-h-screen flex items-center justify-center p-4 relative z-10 ${dir === 'rtl' ? 'text-right' : 'text-left'}`} dir={dir}>
       
       <button 
         onClick={toggleLanguage}
@@ -39,8 +39,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         <span>{language === 'ar' ? 'English' : 'العربية'}</span>
       </button>
 
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden relative z-0">
-        <div className="p-8 bg-indigo-600 text-center">
+      <div className="bg-white/90 backdrop-blur-md w-full max-w-md rounded-2xl shadow-xl overflow-hidden relative border border-white/50">
+        <div className="p-8 bg-indigo-600/90 text-center">
           <div className="flex justify-center mb-6">
             <div className="w-48 h-48 rounded-full border-4 border-white/20 shadow-2xl bg-white flex items-center justify-center p-1 overflow-hidden">
                <svg viewBox="0 0 500 500" className="w-full h-full">
