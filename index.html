@@ -14,6 +14,29 @@
     <meta name="apple-mobile-web-app-title" content="Golden Academy">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              indigo: {
+                50: 'var(--color-primary-50)',
+                100: 'var(--color-primary-100)',
+                200: 'var(--color-primary-200)',
+                300: 'var(--color-primary-300)',
+                400: 'var(--color-primary-400)',
+                500: 'var(--color-primary-500)',
+                600: 'var(--color-primary-600)',
+                700: 'var(--color-primary-700)',
+                800: 'var(--color-primary-800)',
+                900: 'var(--color-primary-900)',
+                950: 'var(--color-primary-950)',
+              }
+            }
+          }
+        }
+      }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <style>
       body {
@@ -34,6 +57,21 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #94a3b8; 
       }
+
+      /* Default Theme Variables (Indigo) */
+      :root {
+        --color-primary-50: #eef2ff;
+        --color-primary-100: #e0e7ff;
+        --color-primary-200: #c7d2fe;
+        --color-primary-300: #a5b4fc;
+        --color-primary-400: #818cf8;
+        --color-primary-500: #6366f1;
+        --color-primary-600: #4f46e5;
+        --color-primary-700: #4338ca;
+        --color-primary-800: #3730a3;
+        --color-primary-900: #312e81;
+        --color-primary-950: #1e1b4b;
+      }
     </style>
   <script type="importmap">
 {
@@ -43,7 +81,10 @@
     "react/": "https://aistudiocdn.com/react@^19.2.1/",
     "react": "https://aistudiocdn.com/react@^19.2.1",
     "@google/genai": "https://aistudiocdn.com/@google/genai@^1.31.0",
-    "recharts": "https://aistudiocdn.com/recharts@^3.5.1"
+    "recharts": "https://aistudiocdn.com/recharts@^3.5.1",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
+    "vite": "https://aistudiocdn.com/vite@^7.2.6",
+    "@capacitor/cli": "https://aistudiocdn.com/@capacitor/cli@^7.4.4"
   }
 }
 </script>
