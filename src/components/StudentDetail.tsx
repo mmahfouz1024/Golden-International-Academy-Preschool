@@ -1,46 +1,82 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
-  ArrowRight, ArrowLeft, Smile, Frown, Meh, Sun, Cloud, Moon, 
+  Smile, Frown, Meh, Sun, Cloud, Moon, 
   Utensils, GlassWater, Droplets, Clock, Plus, Trash2, 
-  Gamepad2, Pencil, Check, Lock, Image, X as CloseIcon, Save
+  Gamepad2, Pencil, Check, Lock, Image, Save, Calendar
 } from 'lucide-react';
 import { Student, DailyReport, Mood, MealStatus, BathroomType } from '../types';
-import { MOCK_REPORTS } from '../constants';
+import { getReports, saveReports } from '../services/storageService';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useNotification } from '../contexts/NotificationContext';
 
 interface StudentDetailProps {
   student: Student;
-  onBack?: () => void;
   readOnly?: boolean;
+  initialDate?: string;
 }
 
-const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack, readOnly = false }) => {
+const StudentDetail: React.FC<StudentDetailProps> = ({ student, readOnly = false, initialDate }) => {
   const { t, language } = useLanguage();
   const { addNotification } = useNotification();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const [report, setReport] = useState<DailyReport>(
-    MOCK_REPORTS[student.id] || {
-      id: `new-${Date.now()}`,
-      studentId: student.id,
-      date: new Date().toISOString().split('T')[0],
-      mood: 'neutral',
-      moodNotes: '',
-      meals: { breakfast: 'none', lunch: 'none', snack: 'none', waterCups: 0, notes: '' },
-      bathroom: [],
-      nap: { slept: false, notes: '' },
-      activities: [],
-      photos: [],
-      notes: ''
-    }
-  );
+  const [selectedDate, setSelectedDate] = useState<string>(initialDate || new Date().toISOString().split('T')[0]);
+  
+  const [report, setReport] = useState<DailyReport>({
+    id: `new-${Date.now()}`,
+    studentId: student.id,
+    date: selectedDate,
+    mood: 'neutral',
+    moodNotes: '',
+    meals: { breakfast: 'none', lunch: 'none', snack: 'none', waterCups: 0, notes: '' },
+    bathroom: [],
+    nap: { slept: false, notes: '' },
+    activities: [],
+    photos: [],
+    notes: ''
+  });
 
   const [newActivity, setNewActivity] = useState('');
   const [isSaved, setIsSaved] = useState(false);
 
+  // Load report when student or date changes
+  useEffect(() => {
+    const allReports = getReports();
+    // Key pattern: studentId_date
+    const reportKey = `${student.id}_${selectedDate}`;
+    
+    if (allReports[reportKey]) {
+      setReport(allReports[reportKey]);
+    } else {
+      // Reset to blank report if none exists for this date
+      setReport({
+        id: `new-${Date.now()}`,
+        studentId: student.id,
+        date: selectedDate,
+        mood: 'neutral',
+        moodNotes: '',
+        meals: { breakfast: 'none', lunch: 'none', snack: 'none', waterCups: 0, notes: '' },
+        bathroom: [],
+        nap: { slept: false, notes: '' },
+        activities: [],
+        photos: [],
+        notes: ''
+      });
+    }
+  }, [student.id, selectedDate]);
+
   const handleSave = () => {
+    const allReports = getReports();
+    const reportKey = `${student.id}_${selectedDate}`;
+    
+    const updatedReports = {
+      ...allReports,
+      [reportKey]: { ...report, date: selectedDate }
+    };
+    
+    saveReports(updatedReports);
+    
     setIsSaved(true);
     addNotification(
       t('savedSuccessfully'), 
@@ -90,7 +126,7 @@ const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack, readOnly
   const addBathroomEntry = () => {
     setReport(prev => ({
       ...prev,
-      bathroom: [...prev.bathroom, { time: new Date().toLocaleTimeString(language === 'ar' ? 'ar-SA' : 'en-US', { hour: '2-digit', minute: '2-digit' }), type: 'wet' }]
+      bathroom: [...prev.bathroom, { time: new Date().toLocaleTimeString(language === 'ar' ? 'ar-SA' : 'en-US', { hour: '2-digit', minute: '2-digit' }), type: 'urine' }]
     }));
   };
 
@@ -113,23 +149,27 @@ const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack, readOnly
 
   return (
     <div className="space-y-6 animate-fade-in pb-10">
-      <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-        {!readOnly && onBack && (
-          <button 
-            onClick={onBack}
-            className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors"
-          >
-            {language === 'ar' ? <ArrowRight size={24} /> : <ArrowLeft size={24} />}
-          </button>
-        )}
+      <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex-wrap">
         <img src={student.avatar} alt={student.name} className="w-16 h-16 rounded-full border-2 border-indigo-100" />
         <div className="flex-1">
           <h2 className="text-2xl font-bold text-gray-800">{student.name}</h2>
           <p className="text-gray-500">{student.classGroup}</p>
         </div>
-        <div className={`text-${language === 'ar' ? 'left' : 'right'}`}>
-          <div className="text-sm font-bold text-gray-400">{t('dailyReport')}</div>
-          <div className="text-lg font-bold text-indigo-600">{new Date().toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
+        <div className="flex items-center gap-3">
+           <div className={`text-${language === 'ar' ? 'left' : 'right'}`}>
+            <div className="text-sm font-bold text-gray-400">{t('dailyReport')}</div>
+             {/* Date Picker Integration */}
+             <div className="flex items-center gap-2 mt-1">
+               <Calendar size={16} className="text-indigo-500" />
+               <input 
+                 type="date" 
+                 value={selectedDate}
+                 onChange={(e) => setSelectedDate(e.target.value)}
+                 className="bg-transparent font-bold text-indigo-600 focus:outline-none focus:border-b-2 focus:border-indigo-200"
+                 disabled={readOnly}
+               />
+             </div>
+          </div>
         </div>
       </div>
 
@@ -276,7 +316,7 @@ const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack, readOnly
                   <Clock size={14} className="text-gray-400" />
                   <span className="text-xs font-bold text-gray-600">{entry.time}</span>
                   <div className="flex-1 flex gap-1">
-                    {(['wet', 'bm', 'potty'] as BathroomType[]).map(type => (
+                    {(['urine', 'stool'] as BathroomType[]).map(type => (
                       <button
                         key={type}
                         disabled={readOnly}

@@ -1,16 +1,23 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Shield, X, Save, User as UserIcon } from 'lucide-react';
-import { MOCK_USERS, MOCK_STUDENTS } from '../constants';
-import { User, UserRole } from '../types';
+import { getUsers, saveUsers, getStudents } from '../services/storageService';
+import { User, UserRole, Student } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const UserManagement: React.FC = () => {
   const { t, language } = useLanguage();
-  const [users, setUsers] = useState<User[]>(MOCK_USERS);
+  const [users, setUsers] = useState<User[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+
+  // Load users and students from storage on mount
+  useEffect(() => {
+    setUsers(getUsers());
+    setStudents(getStudents());
+  }, []);
 
   const [formData, setFormData] = useState<Partial<User>>({
     name: '',
@@ -47,22 +54,29 @@ const UserManagement: React.FC = () => {
     e.preventDefault();
     if (!formData.username || !formData.name || !formData.password) return;
 
+    let updatedUsers: User[];
+
     if (editingUser) {
-      setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...formData } as User : u));
+      updatedUsers = users.map(u => u.id === editingUser.id ? { ...u, ...formData } as User : u);
     } else {
       const newUser: User = {
         id: `u-${Date.now()}`,
         avatar: `https://picsum.photos/seed/${Date.now()}/100/100`,
         ...formData as User
       };
-      setUsers([...users, newUser]);
+      updatedUsers = [...users, newUser];
     }
+    
+    setUsers(updatedUsers);
+    saveUsers(updatedUsers); // Persist to LocalStorage
     setIsModalOpen(false);
   };
 
   const handleDelete = (id: string) => {
     if (confirm(t('deleteUserConfirm'))) {
-      setUsers(users.filter(u => u.id !== id));
+      const updatedUsers = users.filter(u => u.id !== id);
+      setUsers(updatedUsers);
+      saveUsers(updatedUsers); // Persist to LocalStorage
     }
   };
 
@@ -121,7 +135,7 @@ const UserManagement: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {filteredUsers.map((user) => {
-                const linkedStudent = MOCK_STUDENTS.find(s => s.id === user.linkedStudentId);
+                const linkedStudent = students.find(s => s.id === user.linkedStudentId);
                 return (
                   <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
@@ -255,7 +269,7 @@ const UserManagement: React.FC = () => {
                     onChange={e => setFormData({...formData, linkedStudentId: e.target.value})}
                   >
                     <option value="">{t('selectStudent')}</option>
-                    {MOCK_STUDENTS.map(student => (
+                    {students.map(student => (
                       <option key={student.id} value={student.id}>
                         {student.name} ({student.classGroup})
                       </option>

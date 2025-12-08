@@ -1,16 +1,23 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, X, Save, School, Users } from 'lucide-react';
-import { MOCK_CLASSES, MOCK_USERS } from '../constants';
+import { getUsers, getClasses, saveClasses } from '../services/storageService';
 import { ClassGroup, User } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const ClassManagement: React.FC = () => {
   const { t, language } = useLanguage();
-  const [classes, setClasses] = useState<ClassGroup[]>(MOCK_CLASSES);
+  const [classes, setClasses] = useState<ClassGroup[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingClass, setEditingClass] = useState<ClassGroup | null>(null);
+
+  // Load classes and users from storage on mount
+  useEffect(() => {
+    setClasses(getClasses());
+    setUsers(getUsers());
+  }, []);
 
   const [formData, setFormData] = useState<Partial<ClassGroup>>({
     name: '',
@@ -19,7 +26,7 @@ const ClassManagement: React.FC = () => {
     capacity: 20
   });
 
-  const teachers = MOCK_USERS.filter(u => u.role === 'teacher' || u.role === 'admin');
+  const teachers = users.filter(u => u.role === 'teacher' || u.role === 'admin');
 
   const handleOpenModal = (classGroup?: ClassGroup) => {
     if (classGroup) {
@@ -46,21 +53,27 @@ const ClassManagement: React.FC = () => {
     e.preventDefault();
     if (!formData.name) return;
 
+    let updatedClasses: ClassGroup[];
+
     if (editingClass) {
-      setClasses(classes.map(c => c.id === editingClass.id ? { ...c, ...formData } as ClassGroup : c));
+      updatedClasses = classes.map(c => c.id === editingClass.id ? { ...c, ...formData } as ClassGroup : c);
     } else {
       const newClass: ClassGroup = {
         id: `c-${Date.now()}`,
         ...formData as ClassGroup
       };
-      setClasses([...classes, newClass]);
+      updatedClasses = [...classes, newClass];
     }
+    setClasses(updatedClasses);
+    saveClasses(updatedClasses);
     setIsModalOpen(false);
   };
 
   const handleDelete = (id: string) => {
     if (confirm(t('deleteClassConfirm'))) {
-      setClasses(classes.filter(c => c.id !== id));
+      const updatedClasses = classes.filter(c => c.id !== id);
+      setClasses(updatedClasses);
+      saveClasses(updatedClasses);
     }
   };
 
