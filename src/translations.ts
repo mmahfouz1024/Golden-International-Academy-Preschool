@@ -16,6 +16,8 @@ export const translations = {
     back: "عودة",
     yes: "نعم",
     no: "لا",
+    noChildRecord: "لا يوجد سجل طفل مرتبط بهذا الحساب",
+    contactAdmin: "يرجى التواصل مع إدارة الروضة",
     
     // Auth
     loginTitle: "سجل الدخول للمتابعة",
@@ -237,6 +239,8 @@ export const translations = {
     back: "Back",
     yes: "Yes",
     no: "No",
+    noChildRecord: "No child record linked to this account",
+    contactAdmin: "Please contact school administration",
 
     // Auth
     loginTitle: "Login to Continue",
