@@ -1,5 +1,12 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
+// Declaration to satisfy TypeScript if @types/node is missing
+declare var process: {
+  env: {
+    API_KEY: string;
+  };
+};
+
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const generateActivityPlan = async (ageGroup: string, topic: string) => {
